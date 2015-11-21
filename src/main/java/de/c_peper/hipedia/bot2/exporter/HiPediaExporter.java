@@ -1,6 +1,7 @@
 package de.c_peper.hipedia.bot2.exporter;
 
 import de.c_peper.hipedia.bot2.config.Config;
+import de.c_peper.hipedia.bot2.model.Page;
 import net.sourceforge.jwbf.core.actions.HttpActionClient;
 import net.sourceforge.jwbf.core.contentRep.Article;
 import net.sourceforge.jwbf.mediawiki.bots.MediaWikiBot;
@@ -29,20 +30,27 @@ public class HiPediaExporter {
     public HiPediaExporter() {
         HttpActionClient client = HttpActionClient.builder() //
             .withUrl(URL) //
-            .withUserAgent(BOT_NAME, "1.0", "Benutzer:Trublu") //
+            .withUserAgent(BOT_NAME, Config.VERSION, "Benutzer:Trublu") //
             .withRequestsPerUnit(10, TimeUnit.MINUTES) //
             .build();
         wikiBot = new MediaWikiBot(client);
         wikiBot.login(USERNAME, PASSWD);
+        LOGGER.info("HiPedia Login");
     }
 
-    public void storePage(final String pageName, final String content) {
+    /**
+     * Stores new content in the given page and surrounds it with markers. Replaces content already present with those exact markers.
+     *
+     * @param page the internal model page to be stored.
+     */
+    public void storePage(final Page page) {
         String output = "<!-- " + BOT_MARKER + " -->";
         output += "<!-- - Inhalt durch BOT geschrieben. Bis zur nächsten Markierung nicht bearbeiten --> \n";
-        output += content;
+        output += page.getText();
         output += "\n<!-- Ende " + BOT_MARKER + " -->";
-        Article article = wikiBot.getArticle(pageName);
-        LOGGER.info("fetched article from HiPedia: {}", pageName);
+        LOGGER.info("start to fetch article from HiPedia: {}", page.getName());
+        Article article = wikiBot.getArticle(page.getName());
+        LOGGER.info("fetched article from HiPedia: {}", page.getName());
         String articleText = article.getText();
         if (articleText.contains(BOT_MARKER)) {
             articleText = articleText.replaceFirst(getBotMarkerRegex(), output);
@@ -51,7 +59,7 @@ public class HiPediaExporter {
         }
         article.setText(articleText);
         article.save();
-        LOGGER.info("stored article from HiPedia: {}", pageName);
+        LOGGER.info("stored article from HiPedia: {}", page.getName());
     }
 
     /**
