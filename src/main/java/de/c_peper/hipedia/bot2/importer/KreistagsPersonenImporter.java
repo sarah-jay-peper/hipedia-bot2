@@ -60,18 +60,13 @@ public class KreistagsPersonenImporter {
             if (href.contains("persid")) { // check if there is "persid" present (personen id)
                 KreistagsPerson kreistagsPerson = KreistagsPerson.builder()
                     .URL(href)
-//                    .aufgaben(extractKreistagsAufgaben(href)) // TODO re-activate
+                    .aufgaben(extractKreistagsAufgaben(href))
                     .nachname(tableElement.child(1).child(0).text())
                     .vorname(tableElement.child(2).child(0).text())
                     .ort(tableElement.child(3).child(0).text())
                     .fraktion(tableElement.child(4).children().isEmpty() ? "" : tableElement.child(4).child(0).text())
                     .build();
-                if (kreistagsPerson.getNachname().equals("Peper") ||
-                    kreistagsPerson.getNachname().equals("Karrasch") ||
-                    kreistagsPerson.getNachname().equals("Bertram")) {
-                    kreistagsPerson.setAufgaben(extractKreistagsAufgaben(href)); // TODO move this into builder when development is finished
-                    kreistagsPersonen.add(kreistagsPerson);
-                }
+                kreistagsPersonen.add(kreistagsPerson);
             }
         }
         return kreistagsPersonen;

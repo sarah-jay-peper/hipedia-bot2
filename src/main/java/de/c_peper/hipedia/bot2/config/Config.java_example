@@ -1,0 +1,8 @@
+package de.c_peper.hipedia.bot2.config;
+
+public class Config {
+
+    public static final String USER = "";
+    public static final String PASSWD = "";
+    public static final String VERSION = "0.1";
+}

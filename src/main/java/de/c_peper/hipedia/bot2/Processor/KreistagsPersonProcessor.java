@@ -42,8 +42,8 @@ public class KreistagsPersonProcessor {
             output += "|-\n";
             output += "| [[" + kreistagsAufgabe.getGroup() + "]]\n";
             output += "| " + kreistagsAufgabe.getFunction() + "\n";
-            output += "| " + kreistagsAufgabe.getStart() + "\n";
-            output += "| " + kreistagsAufgabe.getEnd() + "\n";
+            output += "| " + FormatUtil.formatTwoDigitYear(kreistagsAufgabe.getStart()) + "\n";
+            output += "| " + FormatUtil.formatTwoDigitYear(kreistagsAufgabe.getEnd()) + "\n";
         }
 
         output += "|}";
