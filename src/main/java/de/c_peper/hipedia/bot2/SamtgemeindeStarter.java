@@ -43,6 +43,7 @@ public class SamtgemeindeStarter {
             "Samtgemeinde Freden (Leine)",
             "Samtgemeinde Gronau (Leine)",
             "Samtgemeinde Lamspringe",
-            "Samtgemeinde Sibbesse");
+            "Samtgemeinde Sibbesse",
+            "Samtgemeinde Leinebergland");
     }
 }
