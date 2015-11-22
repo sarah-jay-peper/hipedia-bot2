@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by trublu on 20/11/15.
+ * Exporter to store generated data in HiPedia (www.hipedia.de)
  */
 public class HiPediaExporter {
 
@@ -31,7 +31,7 @@ public class HiPediaExporter {
         HttpActionClient client = HttpActionClient.builder() //
             .withUrl(URL) //
             .withUserAgent(BOT_NAME, Config.VERSION, "Benutzer:Trublu") //
-            .withRequestsPerUnit(10, TimeUnit.MINUTES) //
+            .withRequestsPerUnit(60, TimeUnit.MINUTES) //
             .build();
         wikiBot = new MediaWikiBot(client);
         wikiBot.login(USERNAME, PASSWD);
@@ -44,7 +44,7 @@ public class HiPediaExporter {
      * @param page the internal model page to be stored.
      */
     public void storePage(final Page page) {
-        String output = "<!-- " + BOT_MARKER + " -->";
+        String output = "<!-- " + BOT_MARKER + " -->\n";
         output += "<!-- - Inhalt durch BOT geschrieben. Bis zur nächsten Markierung nicht bearbeiten --> \n";
         output += page.getText();
         output += "\n<!-- Ende " + BOT_MARKER + " -->";

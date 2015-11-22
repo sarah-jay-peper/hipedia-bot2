@@ -24,6 +24,8 @@ public class KreistagsPersonenImporter {
 
     public static final String SOURCE_URL = BASE_URL + "/ratsinfo/hildesheimlk/Person.html";
 
+    public static final String USER_AGENT = "TruBot crawler by Jason Peper";
+
     /**
      * Extracts a list of {@link KreistagsPerson}en from the ratsinfo website of Kreistag Hildesheim.
      *
@@ -31,7 +33,11 @@ public class KreistagsPersonenImporter {
      */
     public static List<KreistagsPerson> getKreistagsPersonen() {
         try {
-            Document doc = Jsoup.connect(SOURCE_URL).get();
+            Document doc = Jsoup.connect(SOURCE_URL)
+                .userAgent(USER_AGENT)
+                .referrer("http://www.kreistags.info")
+                .header("Accept-Language", "de")
+                .get();
             Elements tableElements = extractTableFromMainColumn(doc);
             List<KreistagsPerson> kreistagsPersonen = extractKreistagsPerson(tableElements);
             return kreistagsPersonen;
@@ -50,17 +56,19 @@ public class KreistagsPersonenImporter {
     private static List<KreistagsPerson> extractKreistagsPerson(Elements tableElements) {
         List<KreistagsPerson> kreistagsPersonen = Lists.newArrayList();
         for (Element tableElement : tableElements) {
-            String href = tableElement.child(0).child(0).attr("href");
+            String href = BASE_URL + tableElement.child(0).child(0).attr("href");
             if (href.contains("persid")) { // check if there is "persid" present (personen id)
                 KreistagsPerson kreistagsPerson = KreistagsPerson.builder()
                     .URL(href)
-//                    .aufgaben(extractKreistagsAufgaben(href))
+//                    .aufgaben(extractKreistagsAufgaben(href)) // TODO re-activate
                     .nachname(tableElement.child(1).child(0).text())
                     .vorname(tableElement.child(2).child(0).text())
                     .ort(tableElement.child(3).child(0).text())
                     .fraktion(tableElement.child(4).children().isEmpty() ? "" : tableElement.child(4).child(0).text())
                     .build();
-                if (kreistagsPerson.getNachname().equals("Peper")) {
+                if (kreistagsPerson.getNachname().equals("Peper") ||
+                    kreistagsPerson.getNachname().equals("Karrasch") ||
+                    kreistagsPerson.getNachname().equals("Bertram")) {
                     kreistagsPerson.setAufgaben(extractKreistagsAufgaben(href)); // TODO move this into builder when development is finished
                     kreistagsPersonen.add(kreistagsPerson);
                 }
@@ -77,7 +85,11 @@ public class KreistagsPersonenImporter {
      */
     private static List<KreistagsAufgabe> extractKreistagsAufgaben(String personURL) {
         try {
-            Document doc = Jsoup.connect(BASE_URL + personURL).get();
+            Document doc = Jsoup.connect(personURL)
+                .userAgent(USER_AGENT)
+                .header("Accept-Language", "de")
+                .referrer(SOURCE_URL)
+                .get();
             Elements elements = extractPersonTableFromMainColumn(doc);
             elements.remove(0); // remove headings
             List<KreistagsAufgabe> kreistagsAufgaben = Lists.newArrayList();
